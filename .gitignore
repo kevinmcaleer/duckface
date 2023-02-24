@@ -1,5 +1,6 @@
-venv
+venv*
 .DS_Store
 secret.py
 config
 *.pyc
+venv_old
