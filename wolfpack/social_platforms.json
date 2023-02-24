@@ -1,0 +1,7 @@
+{
+    "platforms": ["wolfpack.instagram", "wolfpack.twitter"],
+    "items": [
+        {"name":"instagram"},
+        {"name":"twitter"}
+    ]
+}
