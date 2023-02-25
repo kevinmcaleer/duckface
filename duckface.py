@@ -41,7 +41,7 @@ def detect_gesture():
         hands, img = detector.findHands(rgb)
 
         if not hands:
-            break
+            continue
 
         # A hand is detected
         hand = hands[0]
@@ -51,12 +51,12 @@ def detect_gesture():
         if not fingers == [0,1,1,0,0]:
             countdown_started = False
             count = 0
-            break 
+            continue
 
         # Check for countdown
         if not countdown_started:
             countdown_started = True
-            break
+            continue
 
         # check if time is up
         if current_time >= target:
