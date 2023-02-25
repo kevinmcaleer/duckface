@@ -37,7 +37,8 @@ def detect_gesture():
         current_time = datetime.now()
         
         img = picam2.capture_array()
-        rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)/
+        rgb = Image.fromarray(img)
         hands, img = detector.findHands(rgb)
 
         if not hands:
