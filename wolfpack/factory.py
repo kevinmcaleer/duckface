@@ -9,7 +9,6 @@ def register(social_platform_name: str, creation_func: Callable[..., SocialPlatf
     social_platform_creation_funcs[social_platform_name] = creation_func
     print(f"Registered {social_platform_name} creation function")
 
-
 def unregister(social_platform_name: str):
     """ Unregisters a social platform creation function."""
 

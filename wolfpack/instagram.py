@@ -1,5 +1,5 @@
-import shutil
 import os
+import shutil
 
 from instabot import Bot
 
@@ -7,7 +7,6 @@ from wolfpack import factory
 from wolfpack.secret import ig_password, ig_username
 
 from .social_platform import SocialPlatform
-
 
 class Instagram(SocialPlatform):
     name = "Instagram"
@@ -34,11 +33,14 @@ class Instagram(SocialPlatform):
             # fix the filename renaming that instabot does
             new_name = os.path.basename(image_path + ".REMOVE_ME")
             os.rename(new_name, image_path)
+
             return True
+
         else:
             print("Instagram post reported a failure, though this may not be the case.")
             return False
 
 def initialize():
+    """ Registers the Instagram social platform."""
     print('Registering Instagram')
     factory.register('instagram', Instagram)
