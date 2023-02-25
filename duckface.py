@@ -4,7 +4,7 @@ from time import sleep
 
 import cv2
 from cvzone.HandTrackingModule import HandDetector
-from picamera2 import Picamera2, Preview
+from picamera2 import Picamera2
 from PIL import Image
 
 from filters import addoverlay, apply_filters
@@ -15,6 +15,7 @@ picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640,480)}))
 picam2.start()
 
+# Define the image files
 PHOTO_FILE = 'snap.jpg'
 INPUT_IMAGE_FILE = PHOTO_FILE
 OUTPUT_IMAGE_FILE = "post.jpg"
@@ -22,13 +23,13 @@ OUTPUT_IMAGE_FILE = "post.jpg"
 image = Image.open(INPUT_IMAGE_FILE)
 
 text = "This is the first end-to-end test from Bubo-2T, detecting the hand gesture, taking a picture applying a filter and overlay, and posting to Twitter and IG!"
-
+   
 def detect_gesture():
+    
+    count = 0
     # setup hand detector
     detector = HandDetector(detectionCon=0.8, maxHands=1)
 
-    count = 0
-  
     target = datetime.today() + timedelta(seconds=1)
     countdown_started = False
 
@@ -39,23 +40,29 @@ def detect_gesture():
         rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         hands, img = detector.findHands(rgb)
 
-        if hands:
-            hand1 = hands[0]
+        if not hands:
+            break
 
-            fingers = detector.fingersUp(hand1)
+        # A hand is detected
+        hand = hands[0]
+        fingers = detector.fingersUp(hand)
 
-            if fingers == [0,1,1,0,0]: # 2 fingers up
-                
-                if countdown_started:
-                    if current_time >= target:
-                        count += 1
-                        target = datetime.today() + timedelta(seconds=1)                    
-                else:
-                    countdown_started = True
-            else:
-                countdown_started = False
-                count = 0
-               
+        # Check for peace sign gesture
+        if not fingers == [0,1,1,0,0]:
+            countdown_started = False
+            count = 0
+            break 
+
+        # Check for countdown
+        if not countdown_started:
+            countdown_started = True
+            break
+
+        # check if time is up
+        if current_time >= target:
+            count += 1
+            target = datetime.today() + timedelta(seconds=1)                    
+    
         cv2.imshow("image", img)
         cv2.waitKey(1)
         
@@ -64,10 +71,11 @@ def detect_gesture():
 
 def take_picture():
     """Take picture """
-    print("Take picture")
-
+    
+    print("Taking picture")
     metadata = picam2.capture_file(PHOTO_FILE)
     print(metadata)
+
 
 # load the social platforms
 with open("./wolfpack/social_platforms.json") as f:
