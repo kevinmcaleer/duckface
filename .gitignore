@@ -4,3 +4,6 @@ secret.py
 config
 *.pyc
 venv_old
+__pycache__
+snap.jpg
+post.jpg
