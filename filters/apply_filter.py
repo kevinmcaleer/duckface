@@ -22,8 +22,9 @@ def addoverlay(background_file, foreground_file, output_image):
     background = Image.open(background_file)
  
     # resize the foreground image
-    base_width = 640
+    # base_width = 640
     img = Image.open(foreground_file)
+    base_width, base_height = background.size
     img_width, img_height = img.size
     width_percent = (base_width / float(img_width))
     horizontal_size = int((float(img_height) * float(width_percent)))

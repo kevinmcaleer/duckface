@@ -5,7 +5,8 @@ from time import sleep
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 from picamera2 import Picamera2
-# from libcamera import control
+# from libcamera import Transform
+import libcamera
 from PIL import Image
 
 from filters import addoverlay, apply_filters
@@ -16,16 +17,31 @@ DEBUG = True # True doesn't post to social networks
 # setup camera
 picam2 = Picamera2()
 
+picam2.rotation = 180
+
 picam2.preview_configuration.size = (800,600)
+preview_config = picam2.create_preview_configuration(transform = libcamera.Transform(hflip=1, vflip=1))
+# transform = Transform(hflip=1, vflip=1)
 # picam2.preview_configuration.format = "YUV420"
 picam2.create_still_configuration = (2304,1296)
+# picam2.create_still_configuration = (libcamera.Transform(hflip=1, vflip=1))
 # picam2.set_controls({"AfMode": control.AdModeEnum.Continuous})
-# low_res_still = picam2.create_still_configuration(main={"size": (320,240)}, display="lores")
+sensor_w, sensor_h = picam2.sensor_resolution
+# low_res_still = picam2.create_still_configuration(main={"size": (sensor_w, sensor_h)}, display="lores", transform = libcamera.Transform(hflip=1, vflip=1))
+
+# config=picam2.create_still_configuration({"size":(640,480)})
+# config["transform"] = libcamera.Transform(hflip=1, vflip=1)
+# config=picam2.still_configuration(transform = Transform(hflip=1, vflip=1))
+# print (f'config is {config}')
 # low_res_video = picam2.create_video_configuration(main={"size": (2048,1536)}, lores={"size":(320,240)}, encode="lores")
 # picam2.configure(low_res_video)
 
-# picam2.configure(picam2.create_preview_configuration(main={"size": (640,480)}))
+picam2.configure(picam2.create_preview_configuration(main={"size": (640,480)}, transform=libcamera.Transform(vflip=1, hflip=1)))
+picam2.configure(picam2.create_video_configuration(transform=libcamera.Transform(vflip=1, hflip=1)))
 # picam2.start("Preview", show_preview=True)
+# picam2.configure(preview_config)
+# picam2.configure(config)
+# picam2.configure(config)
 picam2.start()
 
 # Define the image files
@@ -91,7 +107,10 @@ def take_picture():
     """Take picture """
     
     print("Taking picture")
+   
+
     picam2.switch_mode_and_capture_file("still", PHOTO_FILE)
+
     # metadata = picam2.capture_file(PHOTO_FILE)
     # print(metadata)
 
@@ -108,11 +127,17 @@ print(f"Platforms: {platforms}")
 
 while True:
     detect_gesture()
-    sleep(2)
+    # sleep(2)
     take_picture()
+    # sleep(0.1)
+    print('fixing image rotation for bubo-2t images')
+    image = Image.open(PHOTO_FILE)
+    image = image.rotate(180)
+    image = image.save(PHOTO_FILE)
+    # sleep(0.1)
     apply_filters(PHOTO_FILE)
     addoverlay(PHOTO_FILE, "overlay.png", OUTPUT_IMAGE_FILE)
-    image = Image.open(PHOTO_FILE)
+    image = Image.open(OUTPUT_IMAGE_FILE)
     image.show()
 
     if not DEBUG:
