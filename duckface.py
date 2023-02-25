@@ -22,8 +22,8 @@ OUTPUT_IMAGE_FILE = "post.jpg"
 
 image = Image.open(INPUT_IMAGE_FILE)
 
-text = "This is the first end-to-end test from Bubo-2T, detecting the hand gesture, taking a picture applying a filter and overlay, and posting to Twitter and IG!"
-   
+text = "I made a robot that can see and tweet! This is from the prototype, now to upload this code to Bubo-2T for real.\n #robotics #python #STEM #raspberrypi"
+
 def detect_gesture():
     
     count = 0
