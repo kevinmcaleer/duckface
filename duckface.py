@@ -39,7 +39,9 @@ def detect_gesture():
         img = picam2.capture_array()
         rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         hands, img = detector.findHands(rgb)
-
+        cv2.imshow("image", img)
+        cv2.waitKey(1)
+        
         if not hands:
             continue
 
@@ -63,8 +65,7 @@ def detect_gesture():
             count += 1
             target = datetime.today() + timedelta(seconds=1)                    
     
-        cv2.imshow("image", img)
-        cv2.waitKey(1)
+        
         
     cv2.destroyAllWindows()
 
