@@ -10,6 +10,8 @@ from PIL import Image
 from filters import addoverlay, apply_filters
 from wolfpack import factory, loader
 
+DEBUG = True # True doesn't post to social networks
+
 # setup camera
 picam2 = Picamera2()
 picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640,480)}))
@@ -37,12 +39,13 @@ def detect_gesture():
         current_time = datetime.now()
         
         img = picam2.capture_array()
-        # rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)/
-        rgb = Image.fromarray(img)
+        bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        # rgb = Image.fromarray(img)
         hands, img = detector.findHands(rgb)
         cv2.imshow("image", img)
         cv2.waitKey(1)
-        
+
         if not hands:
             continue
 
@@ -98,6 +101,7 @@ while True:
     image = Image.open(PHOTO_FILE)
     image.show()
 
-    for item in platforms:
-        print(f"Sending message to {item.name}")
-        item.send_message(text, OUTPUT_IMAGE_FILE)
+    if not DEBUG:
+        for item in platforms:
+            print(f"Sending message to {item.name}")
+            item.send_message(text, OUTPUT_IMAGE_FILE)
