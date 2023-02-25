@@ -5,6 +5,7 @@ from time import sleep
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 from picamera2 import Picamera2
+# from libcamera import control
 from PIL import Image
 
 from filters import addoverlay, apply_filters
@@ -14,7 +15,17 @@ DEBUG = True # True doesn't post to social networks
 
 # setup camera
 picam2 = Picamera2()
-picam2.configure(picam2.create_preview_configuration(main={"format": 'XRGB8888', "size": (640,480)}))
+
+picam2.preview_configuration.size = (800,600)
+# picam2.preview_configuration.format = "YUV420"
+picam2.create_still_configuration = (2304,1296)
+# picam2.set_controls({"AfMode": control.AdModeEnum.Continuous})
+# low_res_still = picam2.create_still_configuration(main={"size": (320,240)}, display="lores")
+# low_res_video = picam2.create_video_configuration(main={"size": (2048,1536)}, lores={"size":(320,240)}, encode="lores")
+# picam2.configure(low_res_video)
+
+# picam2.configure(picam2.create_preview_configuration(main={"size": (640,480)}))
+# picam2.start("Preview", show_preview=True)
 picam2.start()
 
 # Define the image files
@@ -39,10 +50,12 @@ def detect_gesture():
         current_time = datetime.now()
         
         img = picam2.capture_array()
-        bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        # img = picam2.capture_image("main")
+        # bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         # rgb = Image.fromarray(img)
         hands, img = detector.findHands(rgb)
+        # hands, img = detector.findHands(img)
         cv2.imshow("image", img)
         cv2.waitKey(1)
 
@@ -71,15 +84,16 @@ def detect_gesture():
     
         
         
-    cv2.destroyAllWindows()
+    # cv2.destroyAllWindows()
 
 
 def take_picture():
     """Take picture """
     
     print("Taking picture")
-    metadata = picam2.capture_file(PHOTO_FILE)
-    print(metadata)
+    picam2.switch_mode_and_capture_file("still", PHOTO_FILE)
+    # metadata = picam2.capture_file(PHOTO_FILE)
+    # print(metadata)
 
 
 # load the social platforms
@@ -105,3 +119,5 @@ while True:
         for item in platforms:
             print(f"Sending message to {item.name}")
             item.send_message(text, OUTPUT_IMAGE_FILE)
+
+cv2.destroyAllWindows()
