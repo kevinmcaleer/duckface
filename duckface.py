@@ -6,7 +6,6 @@ from toot_randomiser import RandomToots
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 from picamera2 import Picamera2
-# from libcamera import Transform
 import libcamera
 from PIL import Image
 
@@ -61,12 +60,8 @@ def detect_gesture():
         current_time = datetime.now()
         
         img = picam2.capture_array()
-        # img = picam2.capture_image("main")
-        # bgr = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         rgb = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        # rgb = Image.fromarray(img)
         hands, img = detector.findHands(rgb)
-        # hands, img = detector.findHands(img)
         cv2.imshow("image", img)
         cv2.waitKey(1)
 
@@ -92,11 +87,6 @@ def detect_gesture():
         if current_time >= target:
             count += 1
             target = datetime.today() + timedelta(seconds=1)                    
-    
-        
-        
-    # cv2.destroyAllWindows()
-
 
 def take_picture():
     """Take picture """
@@ -122,15 +112,15 @@ print(f"Platforms: {platforms}")
 
 while True:
     detect_gesture()
-    # sleep(2)
+
     play_toot_sound()
     take_picture()
-    # sleep(0.1)
+
     print('fixing image rotation for bubo-2t images')
     image = Image.open(PHOTO_FILE)
     image = image.rotate(180)
     image = image.save(PHOTO_FILE)
-    # sleep(0.1)
+
     apply_filters(PHOTO_FILE)
     addoverlay(PHOTO_FILE, "overlay4608x2592.png", OUTPUT_IMAGE_FILE)
     image = Image.open(OUTPUT_IMAGE_FILE)
