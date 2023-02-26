@@ -2,6 +2,7 @@ import json
 from datetime import datetime, timedelta
 from time import sleep
 
+from toot_randomiser import RandomToots
 import cv2
 from cvzone.HandTrackingModule import HandDetector
 from picamera2 import Picamera2
@@ -12,7 +13,11 @@ from PIL import Image
 from filters import addoverlay, apply_filters
 from wolfpack import factory, loader
 
-DEBUG = True # True doesn't post to social networks
+from pydub import AudioSegment
+from pydub.playback import play
+
+# DEBUG = True # True doesn't post to social networks
+DEBUG = False
 
 # setup camera
 picam2 = Picamera2()
@@ -34,7 +39,14 @@ OUTPUT_IMAGE_FILE = "post.jpg"
 
 image = Image.open(INPUT_IMAGE_FILE)
 
-text = "I made a robot that can see and tweet! This is from the prototype, now to upload this code to Bubo-2T for real.\n #robotics #python #STEM #raspberrypi"
+random_message = RandomToots()
+
+text = random_message.text
+
+def play_toot_sound():
+    """ Play toot sound """
+    song = AudioSegment.from_mp3('toot.mp3')
+    play(song)
 
 def detect_gesture():
     
@@ -111,6 +123,7 @@ print(f"Platforms: {platforms}")
 while True:
     detect_gesture()
     # sleep(2)
+    play_toot_sound()
     take_picture()
     # sleep(0.1)
     print('fixing image rotation for bubo-2t images')

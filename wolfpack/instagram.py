@@ -19,6 +19,11 @@ class Instagram(SocialPlatform):
         self.bot = Bot()
 
     def send_message(self, message_text, image_path):
+        if os.path.exists('config'):
+            shutil.rmtree('config') 
+        self.username = ig_username
+        self.password = ig_password
+        self.bot = Bot()
         print("Sending message to Instagram")
         print("Message text: " + message_text)
         print("Image path: " + image_path)
